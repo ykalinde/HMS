@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+	@apply h-full bg-white;
+
+	font-family: 'Jost', sans-serif;
+	font-family: 'inter', sans-serif;
+}
+
+body {
+	@apply h-full bg-gray-50;
+}
