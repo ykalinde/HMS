@@ -22,6 +22,7 @@
 					id="nurseID"
 					type="text"
 					placeholder="Enter Nurse ID"
+					name=""
 				  />
 				
 				<label class="block text-gray-700 text-sm font-bold mb-2" for="nurseName">
@@ -32,6 +33,7 @@
 				  id="nurseName"
 				  type="text"
 				  placeholder="Enter Nurse Name"
+				  name="name"
 				/>
 			  </div>
 			  <div class="mb-4">
@@ -43,6 +45,7 @@
 				  id="nurseAge"
 				  type="number"
 				  placeholder="Enter Nurse Age"
+				  name="age"
 				/>
 			  </div>
 			  <div class="mb-6">
