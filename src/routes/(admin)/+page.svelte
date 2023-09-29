@@ -1,3 +1,8 @@
+<script lang="ts">
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+</script>
 <header class="py-5 border-b border-gray-100 mb-10">
 	<h1 class="text-3xl mb-1">Dashboard</h1>
 	<p class="text-xs text-gray-400">Well here is kanda short description</p>
@@ -28,8 +33,8 @@
 	</div>
 	<div class="bg-white px-8 py-5 shadow rounded-md">
 		<div class="">
-			<span class="font-bold text-4xl">98</span>
-			<span class="text-gray-400 uppercase text-xs">patients</span>
+			<span class="font-bold text-4xl">{data.nurses.length}</span>
+			<span class="text-gray-400 uppercase text-xs">nurses</span>
 		</div>
 
 		<div class="text-sm">
