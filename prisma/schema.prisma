@@ -23,3 +23,10 @@ model Nurse{
   age Int
   gender String
 }
+
+model Doctor{
+  id String @id @default(uuid())
+  name String
+  age Int
+  gender String
+}
