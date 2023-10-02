@@ -6,8 +6,8 @@ import type { PageServerLoad } from './$types.js';
 
 export const load = (async () => {
     return {
-        nurses: await prisma.user.findMany(
-            { where: { role: "nurse" } }
+        patients: await prisma.user.findMany(
+            { where: { role: "patient" } }
         ),
     }
 }) satisfies PageServerLoad;
@@ -25,12 +25,12 @@ export const actions = {
         }
 
         try {
-            const nurse = await prisma.user.create({
+            const patient = await prisma.user.create({
                 data: {
                     email: "",
                     age: Number.parseInt(age),
                     gender: gender,
-                    role: "nurse",
+                    role: "patient",
                     password: "password"
                 }
             });
@@ -38,7 +38,7 @@ export const actions = {
             console.log(error);
         }
 
-        throw redirect(301, '/nurses');
+        throw redirect(301, '/patients');
     },
     delete: async ({ request }) => {
         const data = await request.formData();
@@ -53,6 +53,6 @@ export const actions = {
             where: { id: Number.parseInt(id) }
         });
 
-        throw redirect(302, '/nurses');
+        throw redirect(302, '/patients');
     }
 }

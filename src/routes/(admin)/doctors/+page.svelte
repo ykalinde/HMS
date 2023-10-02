@@ -1,9 +1,3 @@
-<header class="py-5 border-b border-gray-100 mb-10">
-	<h1 class="text-3xl mb-1">Doctors</h1>
-	<p class="text-xs text-gray-400">Well here is kanda short description</p>
-	<nav />
-</header>
-
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/modal.svelte';
@@ -47,7 +41,7 @@
 				{#each data.doctor as doctor, index}
 					<tr class="hover:bg-gray-200">
 						<td class="py-2 px-4">{index}</td>
-						<td class="py-2 px-4 capitalize">{doctor.name}</td>
+						<td class="py-2 px-4 capitalize">{doctor.firstname}</td>
 						<td class="py-2 px-4 capitalize">{doctor.age}</td>
 						<td class="py-2 px-4 capitalize">{doctor.gender}</td>
 						<td class="py-2 px-4">

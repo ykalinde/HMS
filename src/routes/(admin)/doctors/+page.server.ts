@@ -4,7 +4,9 @@ import type { PageServerLoad } from './$types.js';
 
 export const load = (async () => {
     return {
-        doctor: await prisma.doctor.findMany()
+        doctor: await prisma.user.findMany({
+            where: {role: "doctor"}
+        })
     }
 }) satisfies PageServerLoad;
 
@@ -21,13 +23,13 @@ export const actions = {
         }
 
         try {
-            const doctor = await prisma.doctor.create({
+            /* const doctor = await prisma.user.create({
                 data: {
                     name: name,
                     age: Number.parseInt(age),
                     gender: gender
                 }
-            });
+            }); */
         } catch (error) {
             console.log(error);
         }
@@ -43,9 +45,9 @@ export const actions = {
             return fail(400, { invalid: true });
         }
 
-        await prisma.doctor.delete({
+        /* await prisma.doctor.delete({
             where: { id: id }
-        });
+        }); */
 
         throw redirect(302, '/doctors');
     }

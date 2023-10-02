@@ -33,7 +33,7 @@ export const actions = {
             data: {
                 email: email,
                 password: hash,
-                role: "patient"
+                role: "admin"
             }
         });
 

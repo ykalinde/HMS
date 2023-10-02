@@ -19,11 +19,9 @@ export const actions = {
         }
 
         const user = await prisma.user.findUnique({
-            where: { email: email }
+            where: {email: email}
         })
-        const person = await prisma.user.findFirstOrThrow({
 
-        })
 
         if (!user) {
             return fail(400, { credentials: true })
@@ -35,7 +33,7 @@ export const actions = {
             return fail(400, { credentials: true })
         }
 
-        cookies.set('session', user.id, {
+        cookies.set('session', user.id.toString(), {
             path: '/',
             httpOnly: true,
             sameSite: 'strict',
@@ -43,7 +41,7 @@ export const actions = {
         });
 
         if (user.role == "admin"){
-            throw redirect(302, '/admin') 
+            throw redirect(302, '/') 
         }
 
         // redirect the user
