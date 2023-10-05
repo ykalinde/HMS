@@ -7,6 +7,10 @@
 	export let response: ActionData;
 
 	let show: boolean = false;
+
+    function hide() {
+        show = false;
+    }
 </script>
 
 <header class="py-5 border-b border-gray-100 mb-10 flex justify-between">
@@ -50,7 +54,11 @@
 							scope="row"
 							class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white capitalize"
 						>
-							{user.firstname} {user.lastname}
+							{#if user.role == "nurse" || user.role == 'doctor'}
+                                <a href="/users/nurses/{user.id}" class="hover:text-blue-600">{user.firstname} {user.lastname}</a>
+                                {:else}
+                                {user.firstname} {user.lastname}
+                            {/if}
 						</th>
 						<td class="px-6 py-4 capitalize"> {user.role} </td>
 						<td class="px-6 py-4"> {user.email} </td>
@@ -70,12 +78,13 @@
 {/if}
 
 <Modal bind:showModal={show}>
+    
 	<!-- Fill in all records are required -->
-	<!-- {#if response?.invalid}
-		<p class="text-rose-500">Error</p>
-	{/if} -->
+	{#if response?.error}
+		<p class="text-rose-500">{response.message}</p>
+	{/if}
 
-	<form action="/nurses?/add" use:enhance method="post" class="w-[700px]">
+	<form action="/users?" use:enhance method="post" class="w-[700px]">
 		<h2 class="text-2xl font-semibold mb-4">Add new user</h2>
 
 		<div class="flex space-x-8">
@@ -156,12 +165,26 @@
                     <option value="female">Female</option>
                 </select>
             </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="nurseGender">
+                    Role
+                </label>
+                <select
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="nurseGender"
+                    name="role"
+                >
+                    <option value="doctor">Doctor</option>
+                    <option value="nurse">Nurse</option>
+                    <option value="patient">Patient</option>
+                </select>
+            </div>
         </div>
 		<div class="flex items-center justify-between">
 			<button
 				class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
 				type="submit"
-				on:click={() => (show = false)}
+				
 			>
 				Add User
 			</button>

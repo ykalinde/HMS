@@ -20,4 +20,49 @@ model User {
   age Int?
   gender String?
   createdAt DateTime @default(now())
+  schedules Schedule[]
+  visits Visit[]
+}
+
+model Schedule {
+  id Int @id @default(autoincrement())
+  all_day Boolean
+  title String?
+  background String?
+  start DateTime
+  end DateTime
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+  title String
+  symptoms Symptom[]
+}
+
+model Symptom {
+  id Int @id @default(autoincrement())
+  name String
+  category Category @relation(fields: [category_id], references: [id])
+  category_id Int
+  visits SymptomsOnVisits[]
+}
+
+model Visit {
+  id Int @id @default(autoincrement())
+  condition String
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
+  visitedAt DateTime @default(now())
+  visits SymptomsOnVisits[]
+}
+
+model SymptomsOnVisits {
+  symptom Symptom @relation(fields: [symptom_id], references: [id])
+  symptom_id Int
+  visit Visit @relation(fields: [visit_id], references: [id])
+  visit_id Int
+
+  @@id([symptom_id, visit_id])
 }
