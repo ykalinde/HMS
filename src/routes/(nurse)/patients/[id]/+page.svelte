@@ -8,7 +8,7 @@
 
 	let show: boolean = false;
 
-    let sel: any = [];
+	let sel: any = [];
 </script>
 
 <header class="py-5 border-b border-gray-100 mb-10 flex justify-between">
@@ -99,22 +99,33 @@
 </header>
 
 <section class="flex">
-	<section>
-		<h1>{data.patient?.firstname} {data.patient?.lastname}</h1>
-		<div class="">Email: {data.patient?.email}</div>
-		<div class="">Age: {data.patient?.age}</div>
-		<div class="">Gender: {data.patient?.gender}</div>
+	<section class="px-8 py-4 w-1/2 bg-white shadow rounded-md">
+		<div class="pb-3 mb-3 border-b">
+			<h1 class="text-xl font-bold">{data.patient?.firstname} {data.patient?.lastname}</h1>
+		</div>
+		<div class=""><span class="text-gray-500">Email:</span> {data.patient?.email}</div>
+		<div class=""><span class="text-gray-500">Age:</span> {data.patient?.age}</div>
+		<div class="capitalize"><span class="text-gray-500">Gender:</span> {data.patient?.gender}</div>
 	</section>
 
-	<section class="space-y-3 px-8">
-		<Expandable title="1234">
-			<ul class="px-3">
-				<li><a href="#">user</a></li>
-				<li><a href="#">user</a></li>
-				<li><a href="#">user</a></li>
-				<li><a href="#">user</a></li>
-			</ul>
-		</Expandable>
+	<section class="space-y-3 px-8 w-full">
+		<div class="p-5 bg-gray-200 w-full rounded-md">Vitals</div>
+		<div class="">
+			{#each data.visits as visit}
+			<Expandable title={`${visit.visitedAt.getDay()}/${visit.visitedAt.getMonth()}/${visit.visitedAt.getFullYear()}`}>
+				<ul class="px-3">
+					{#each visit.vitals as vital}
+						<li class="p-4 bg-white shadow">
+							<div class="">Blood Pressure: {vital.bloodPressure}</div>
+							<div class="">Temperature: {vital.temperature}</div>
+							<div class="">Weight: {vital.weight}</div>
+							<div class="">Height: {vital.height}</div>
+						</li>
+					{/each}
+				</ul>
+			</Expandable>
+			{/each}
+		</div>
 	</section>
 </section>
 
@@ -124,13 +135,14 @@
 		<p class="text-rose-500">{response.message}</p>
 	{/if}
  -->
-	<form action="" use:enhance method="post" class="w-[800px]">
-		<h2 class="text-2xl font-semibold mb-4">Record</h2>
+	<form action="" use:enhance method="post" class="w-[900px]">
+		<h2 class="text-2xl font-semibold mb-4">Vitals</h2>
 
-        <input type="hidden" name="symptoms" bind:value={sel}>
+		<input type="hidden" name="symptoms" bind:value={sel} />
+		<input type="hidden" name="userId" bind:value={data.userId} />
 
 		<div class="w-full flex space-x-10">
-			<div class="w-[300px]">
+			<div class="w-[500px]">
 				<div class="mb-4 w-full">
 					<label class="block text-gray-700 text-sm font-bold mb-2" for="bp">
 						Blood pressure
@@ -143,25 +155,28 @@
 						name="bp"
 					/>
 				</div>
-				<div class="mb-4 w-full">
-					<label class="block text-gray-700 text-sm font-bold mb-2" for="height"> Height </label>
-					<input
-						class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-						id="height"
-						type="number"
-						placeholder="0"
-						name="height"
-					/>
-				</div>
-				<div class="mb-4 w-full">
-					<label class="block text-gray-700 text-sm font-bold mb-2" for="weight"> Weight </label>
-					<input
-						class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-						id="weight"
-						type="number"
-						placeholder="0"
-						name="weight"
-					/>
+
+				<div class="flex space-x-8">
+					<div class="mb-4 w-full">
+						<label class="block text-gray-700 text-sm font-bold mb-2" for="height"> Height </label>
+						<input
+							class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+							id="height"
+							type="number"
+							placeholder="0"
+							name="height"
+						/>
+					</div>
+					<div class="mb-4 w-full">
+						<label class="block text-gray-700 text-sm font-bold mb-2" for="weight"> Weight </label>
+						<input
+							class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+							id="weight"
+							type="number"
+							placeholder="0"
+							name="weight"
+						/>
+					</div>
 				</div>
 
 				<div class="mb-4 w-full">
@@ -176,15 +191,35 @@
 						name="temperature"
 					/>
 				</div>
+				<div class="mb-4 w-full">
+					<label class="block text-gray-700 text-sm font-bold mb-2" for="temperature">
+						Condition
+					</label>
+
+					<select
+						name="condition"
+						id="condition"
+						class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+					>
+						<option selected disabled>Select condition</option>
+						<option value="critical">critical</option>
+					</select>
+				</div>
 			</div>
-			<div class="w-full border-l border-black">
+			<div class="w-full border-l border-gray-200 pl-5">
 				<div class="grid grid-cols-2 gap-2">
 					{#each data.categories as category}
 						<div class="">
 							<Expandable title={category.title}>
 								{#each category.symptoms as symptom}
 									<div class="px-4">
-										<input type="checkbox" name="" id={symptom.id.toString()} bind:group={sel} value={symptom.id} />
+										<input
+											type="checkbox"
+											name=""
+											id={symptom.id.toString()}
+											bind:group={sel}
+											value={symptom.id}
+										/>
 										<label for={symptom.id.toString()}>{symptom.name}</label>
 									</div>
 								{/each}
@@ -297,12 +332,12 @@
 				Add User
 			</button>
 		</div> -->
-        <button
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            type="submit"
-            
-        >
-            Add User
-        </button>
+		<button
+			class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+			type="submit"
+		>
+
+		Submit
+		</button>
 	</form>
 </Modal>

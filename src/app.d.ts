@@ -5,8 +5,14 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			user: {
-				id: string;
+				id: number,
+				firstname: string?;
+				lastname: string?;
 				email: string;
+				role: string
+				age: number?;
+				gender: string?;
+				createdAt: Date;
 			},
 			campsite: {
 				id: string;
@@ -20,4 +26,4 @@ declare global {
 	}
 }
 
-export {};
+export { };

@@ -52,15 +52,7 @@
 				</Expandable>
 			</li>
 
-			<li>
-				<a
-					href="/appointments"
-					class="flex items-center space-x-2 hover:bg-black hover:text-white py-1.5 px-2 rounded-md"
-				>
-					<span class="material-symbols-outlined text-gray-500"> calendar_month </span>
-					<span>Schedule</span>
-				</a>
-			</li>
+			
 		</ul>
 
 		<div class="">

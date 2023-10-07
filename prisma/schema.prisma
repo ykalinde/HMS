@@ -56,6 +56,7 @@ model Visit {
   user_id Int
   visitedAt DateTime @default(now())
   visits SymptomsOnVisits[]
+  vitals Vital[]
 }
 
 model SymptomsOnVisits {
@@ -65,4 +66,14 @@ model SymptomsOnVisits {
   visit_id Int
 
   @@id([symptom_id, visit_id])
+}
+
+model Vital {
+  id Int @id @default(autoincrement())
+  weight Int
+  height Int
+  temperature Int
+  bloodPressure Int
+  visit Visit @relation(fields: [visitId], references: [id])
+  visitId Int
 }

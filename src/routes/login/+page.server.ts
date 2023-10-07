@@ -20,8 +20,7 @@ export const actions = {
 
         const user = await prisma.user.findUnique({
             where: {email: email}
-        })
-
+        }) 
 
         if (!user) {
             return fail(400, { credentials: true })
@@ -40,11 +39,16 @@ export const actions = {
             maxAge: 60 * 60 * 24 * 30, // set cookie to expire after a month
         });
 
-        if (user.role == "admin"){
-            throw redirect(302, '/') 
-        }
+        console.log(user);
 
-        // redirect the user
-        throw redirect(302, '/')
+        if (user.role == "admin"){
+            throw redirect(302, '/admin') 
+        } else if(user.role == "doctor") {
+            throw redirect(302, '/doctor')
+        } else if(user.role == "nurse") {
+            throw redirect(302, '/nurse')
+        } else {
+            throw redirect(302, '/patient')
+        }
     }
 }
