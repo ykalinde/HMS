@@ -1,14 +1,10 @@
 import { redirect } from '@sveltejs/kit'
 
 export const actions = {
-    default: ({ cookies }) => {
-        // eat the cookie
-        cookies.set('session', '', {
-            path: '/',
-            expires: new Date(0),
-        })
+    default: async ({ cookies }) => {
 
-        // redirect the user
-        throw redirect(302, '/login')
+        cookies.delete('session');
+
+        throw redirect(302, '/login');
     }
 }

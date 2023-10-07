@@ -38,25 +38,33 @@ model Schedule {
 model Category {
   id Int @id @default(autoincrement())
   title String
-  symptoms Symptom[]
+  conditions Condition[]
 }
 
 model Symptom {
   id Int @id @default(autoincrement())
   name String
+  visits SymptomsOnVisits[]
+}
+
+model Condition {
+  id Int @id @default(autoincrement())
+  severity String
+  name String
   category Category @relation(fields: [category_id], references: [id])
   category_id Int
-  visits SymptomsOnVisits[]
 }
 
 model Visit {
   id Int @id @default(autoincrement())
   condition String
-  user User @relation(fields: [user_id], references: [id])
+  user User @relation(name: "user", fields: [user_id], references: [id])
   user_id Int
   visitedAt DateTime @default(now())
   visits SymptomsOnVisits[]
   vitals Vital[]
+  doctorId Int
+  doctor User @relation(fields: [doctorId], references: [id])
 }
 
 model SymptomsOnVisits {

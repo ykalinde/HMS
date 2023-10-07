@@ -7,18 +7,64 @@ export const load = (async ({ params }) => {
     return {
         userId: params.id,
         patient: prisma.user.findFirst({
-            where: { id: Number.parseInt(params.id) }
+            where: { id: Number.parseInt(params.id) },
+            include: { visits: { include: { visits: true } } },
+
         }),
         categories: prisma.category.findMany({
-            include: { symptoms: true }
+            include: { conditions: true }
         }),
         visits: prisma.visit.findMany({
-            include: {vitals: true, visits: true}
-        })
+            where: { user_id: Number.parseInt(params.id) },
+            include: { vitals: true, visits: true }
+        }),
+        doctors: prisma.user.findMany({where: {role: 'doctor'}}),
     };
 }) satisfies PageServerLoad;
 
+interface Condition {
+    id: number;
+    severity: string;
+    name: string;
+    category_id: number;
+}
 
+const severityLevels = ['Critical', 'Severe', 'Mild', 'Stable'];
+
+// Calculate the overall severity based on selected condition IDs
+async function calculateOverallSeverity(selectedConditionIds: number[]): Promise<string> {
+    if (selectedConditionIds.length === 0) {
+        return 'Stable'; // Default to 'Stable' if no conditions are selected
+      }
+    
+      // Fetch condition objects for the selected IDs
+      const selectedConditions = await prisma.condition.findMany({
+        where: {
+          id: {
+            in: selectedConditionIds,
+          },
+        },
+      });
+    
+      // Calculate the average severity index
+      const averageSeverityIndex = Math.floor(
+        selectedConditions.reduce((sum, condition) => {
+          const conditionSeverityIndex = severityLevels.indexOf(condition.severity);
+          return sum + conditionSeverityIndex;
+        }, 0) / selectedConditions.length
+      );
+    
+      // Ensure the calculated index is within bounds
+      const overallSeverityIndex = Math.max(0, Math.min(averageSeverityIndex, severityLevels.length - 1));
+    
+      // Retrieve the overall severity based on the calculated index
+      const overallSeverity = severityLevels[overallSeverityIndex];
+    
+      return overallSeverity;
+}
+
+
+//Critical, Severe, Miled, Stable
 async function insertSymptomsOnVisits(ids: string, visitId: number) {
     const numbersArray = ids.split(',').map(Number);
 
@@ -37,13 +83,16 @@ export const actions = {
 
         const data = await request.formData();
 
-        const symptoms_ids: any = data.get('symptoms');
+        const conditions: any = data.get('conditions');
         const userId = data.get('userId');
 
-        console.log(symptoms_ids?.length);
+        const numbersArray = conditions.split(',').map(Number);
+
+        const overallSeverity = await calculateOverallSeverity(numbersArray);
 
         const schema = object({
             userId: number().required(),
+            doctorId: number().required(),
             height: number().required(),
             weight: number().required(),
             temperature: number().required(),
@@ -58,9 +107,10 @@ export const actions = {
 
             const body = await schema.validateAsync({
                 userId: data.get('userId'),
+                doctorId: data.get('doctorId'),
                 height: data.get('height'),
                 weight: data.get('weight'),
-                condition: data.get('condition'),
+                condition: overallSeverity,
                 temperature: data.get('temperature'),
                 bloodPressure: data.get('bp')
             })
@@ -82,13 +132,13 @@ export const actions = {
                 }
             });
 
-            await insertSymptomsOnVisits(symptoms_ids, visit.id);
+            await insertSymptomsOnVisits(conditions, visit.id);
 
         } catch (error) {
 
         }
 
-        throw redirect(302, `/patients/${userId}`)
+        throw redirect(302, `/nurse/patients/${userId}`)
 
     }
 }

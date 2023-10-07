@@ -9,9 +9,24 @@
 	let show: boolean = false;
 
 	let sel: any = [];
+
+	const visits = data.visits;
+
+	function formatDateToCustomString(date: any) {
+		const options = {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit',
+			hour12: true
+		};
+
+		return date.toLocaleDateString('en-US', options);
+	}
 </script>
 
-<header class="py-5 border-b border-gray-100 mb-10 flex justify-between">
+<header class="px-8 py-5 border-b border-gray-100 flex justify-between">
 	<div class="">
 		{#if data.patient}
 			<h1 class="text-3xl mb-1 capitalize">Passport</h1>
@@ -20,7 +35,7 @@
 				<ol class="inline-flex items-center space-x-1 md:space-x-3">
 					<li class="inline-flex items-center">
 						<a
-							href="/patients"
+							href="/nurse"
 							class="inline-flex items-center text-xs font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
 						>
 							<svg
@@ -55,7 +70,7 @@
 								/>
 							</svg>
 							<a
-								href="/patients"
+								href="/nurse/patients"
 								class="ml-1 text-xs font-medium text-gray-700 hover:text-blue-600 md:ml-2 dark:text-gray-400 dark:hover:text-white"
 								>Patients</a
 							>
@@ -79,7 +94,7 @@
 								/>
 							</svg>
 							<span class="ml-1 text-xs font-medium text-gray-500 md:ml-2 dark:text-gray-400"
-								>Records</span
+								>{data.patient.firstname}</span
 							>
 						</div>
 					</li>
@@ -98,35 +113,55 @@
 	</nav>
 </header>
 
-<section class="flex">
-	<section class="px-8 py-4 w-1/2 bg-white shadow rounded-md">
-		<div class="pb-3 mb-3 border-b">
-			<h1 class="text-xl font-bold">{data.patient?.firstname} {data.patient?.lastname}</h1>
-		</div>
-		<div class=""><span class="text-gray-500">Email:</span> {data.patient?.email}</div>
-		<div class=""><span class="text-gray-500">Age:</span> {data.patient?.age}</div>
-		<div class="capitalize"><span class="text-gray-500">Gender:</span> {data.patient?.gender}</div>
-	</section>
-
-	<section class="space-y-3 px-8 w-full">
-		<div class="p-5 bg-gray-200 w-full rounded-md">Vitals</div>
-		<div class="">
-			{#each data.visits as visit}
-			<Expandable title={`${visit.visitedAt.getDay()}/${visit.visitedAt.getMonth()}/${visit.visitedAt.getFullYear()}`}>
-				<ul class="px-3">
-					{#each visit.vitals as vital}
-						<li class="p-4 bg-white shadow">
-							<div class="">Blood Pressure: {vital.bloodPressure}</div>
-							<div class="">Temperature: {vital.temperature}</div>
-							<div class="">Weight: {vital.weight}</div>
-							<div class="">Height: {vital.height}</div>
-						</li>
+<section class="bg-white p-8">
+	{#if data.visits.length}
+		<div class="relative overflow-x-auto">
+			<table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+				<thead
+					class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+				>
+					<tr>
+						<th scope="col" class="px-6 py-3"> Condition </th>
+						<th scope="col" class="px-6 py-3"> Doctor Assigned</th>
+						<th scope="col" class="px-6 py-3" />
+						<th scope="col" class="px-6 py-3"> Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each data.visits as visit}
+						<tr
+							class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+						>
+							<th
+								scope="row"
+								class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+							>
+								{visit.condition}
+							</th>
+							<td class="px-6 py-4"> {visit.condition} </td>
+							<td class="px-6 py-4">
+								<Expandable title="Vitals">
+									<ul class="px-3">
+										{#each visit.vitals as vital}
+											<li class="p-4 bg-white shadow">
+												<div class="">Blood Pressure: {vital.bloodPressure}</div>
+												<div class="">Temperature: {vital.temperature}</div>
+												<div class="">Weight: {vital.weight}</div>
+												<div class="">Height: {vital.height}</div>
+											</li>
+										{/each}
+									</ul>
+								</Expandable>
+							</td>
+							<td class="px-6 py-4"> {formatDateToCustomString(visit.visitedAt)}</td>
+						</tr>
 					{/each}
-				</ul>
-			</Expandable>
-			{/each}
+				</tbody>
+			</table>
 		</div>
-	</section>
+	{:else}
+		<p>No records</p>
+	{/if}
 </section>
 
 <Modal bind:showModal={show}>
@@ -138,7 +173,7 @@
 	<form action="" use:enhance method="post" class="w-[900px]">
 		<h2 class="text-2xl font-semibold mb-4">Vitals</h2>
 
-		<input type="hidden" name="symptoms" bind:value={sel} />
+		<input type="hidden" name="conditions" bind:value={sel} />
 		<input type="hidden" name="userId" bind:value={data.userId} />
 
 		<div class="w-full flex space-x-10">
@@ -193,16 +228,18 @@
 				</div>
 				<div class="mb-4 w-full">
 					<label class="block text-gray-700 text-sm font-bold mb-2" for="temperature">
-						Condition
+						Asign a doctor
 					</label>
 
 					<select
-						name="condition"
-						id="condition"
+						name="doctorId"
+						id="doctorId"
 						class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
 					>
-						<option selected disabled>Select condition</option>
-						<option value="critical">critical</option>
+						<option selected disabled>Select a doctor</option>
+						{#each data.doctors as doctor}
+							<option value={doctor.id}>{doctor.firstname} {doctor.lastname}</option>
+						{/each}
 					</select>
 				</div>
 			</div>
@@ -211,16 +248,16 @@
 					{#each data.categories as category}
 						<div class="">
 							<Expandable title={category.title}>
-								{#each category.symptoms as symptom}
+								{#each category.conditions as condition}
 									<div class="px-4">
 										<input
 											type="checkbox"
 											name=""
-											id={symptom.id.toString()}
+											id={condition.id.toString()}
 											bind:group={sel}
-											value={symptom.id}
+											value={condition.id}
 										/>
-										<label for={symptom.id.toString()}>{symptom.name}</label>
+										<label for={condition.id.toString()}>{condition.name}</label>
 									</div>
 								{/each}
 							</Expandable>
@@ -336,8 +373,7 @@
 			class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
 			type="submit"
 		>
-
-		Submit
+			Submit
 		</button>
 	</form>
 </Modal>
