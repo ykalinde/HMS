@@ -79,7 +79,9 @@ async function insertSymptomsOnVisits(ids: string, visitId: number) {
 }
 
 export const actions = {
-    default: async ({ request }) => {
+    default: async ({ request, cookies, params }) => {
+
+        const doctorId = Number.parseInt(params.id);
 
         const data = await request.formData();
 
@@ -119,6 +121,7 @@ export const actions = {
                 data: {
                     user_id: body.userId,
                     condition: body.condition,
+                    doctorId: doctorId
                 }
             });
 
