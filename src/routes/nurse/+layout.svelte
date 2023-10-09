@@ -23,7 +23,7 @@
 		},
 		{
 			name: 'Appointments',
-			url: '/nurse/patients',
+			url: '/nurse/appointments',
 			icon: 'personal_injury'
 		},
 		{
