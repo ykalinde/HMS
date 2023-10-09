@@ -142,12 +142,14 @@ export const actions = {
             });
 
             await insertSymptomsOnVisits(conditions, visit.id);
+            // return redirect(302, `/nurse/patients/${params.id}`)
 
         } catch (error) {
             console.log(error);
+            throw redirect(302, `/nurse/patients/${params.id}/create`)
         }
 
-        throw redirect(302, `/nurse/patients/${params.id}/create`)
+        throw redirect(302, `/nurse/patients/${params.id}`)
 
     }
 }

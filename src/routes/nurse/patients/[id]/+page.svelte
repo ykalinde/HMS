@@ -138,7 +138,7 @@
 							>
 								{visit.condition}
 							</th>
-							<td class="px-6 py-4"> {visit.condition} </td>
+							<td class="px-6 py-4">Dr. {visit.doctor.firstname} {visit.doctor.lastname}</td>
 							<td class="px-6 py-4">
 								<Expandable title="Vitals">
 									<ul class="px-3">
@@ -164,7 +164,7 @@
 	{/if}
 </section>
 
-<Modal bind:showModal={show}>
+<Modal bind:showModal={show} title="Visit">
 	<!-- Fill in all records are required -->
 	<!-- {#if response?.error}
 		<p class="text-rose-500">{response.message}</p>

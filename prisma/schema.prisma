@@ -21,7 +21,8 @@ model User {
   gender String?
   createdAt DateTime @default(now())
   schedules Schedule[]
-  visits Visit[]
+  visits Visit[] @relation("User")
+  appointments Visit[] @relation("Doctor")
   speciality String?
 }
 
@@ -58,11 +59,12 @@ model Condition {
 model Visit {
   id Int @id @default(autoincrement())
   condition String
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user User @relation(name: "User",fields: [user_id], references: [id], onDelete: Cascade)
   user_id Int
   visitedAt DateTime @default(now())
   visits SymptomsOnVisits[]
   vitals Vital[]
+  doctor User @relation(name: "Doctor",fields: [doctorId], references: [id])
   doctorId Int
 }
 

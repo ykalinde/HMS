@@ -15,7 +15,7 @@ export const load = (async ({ params }) => {
         }),
         visits: prisma.visit.findMany({
             where: { user_id: Number.parseInt(params.id) },
-            include: { vitals: true, visits: true }
+            include: { vitals: true, visits: true, doctor: true }
         }),
         doctors: prisma.user.findMany({where: {role: 'doctor'}}),
     };
