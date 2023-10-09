@@ -1,23 +1,24 @@
-import { prisma } from '$lib/database';
-import { redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
-import { number, object, string, ValidationError } from "joi";
+import {prisma} from '$lib/database';
+import {redirect} from '@sveltejs/kit';
+import type {PageServerLoad} from '../$types';
+import {number, object, string} from "joi";
 
-export const load = (async ({ params }) => {
+export const load = (async ({params}) => {
     return {
         userId: params.id,
         patient: prisma.user.findFirst({
-            where: { id: Number.parseInt(params.id) },
-            include: { visits: { include: { visits: true } } },
+            where: {id: Number.parseInt(params.id)},
+            include: {visits: {include: {visits: true}}},
         }),
         categories: prisma.category.findMany({
-            include: { conditions: true }
+            include: {conditions: true}
         }),
         visits: prisma.visit.findMany({
-            where: { user_id: Number.parseInt(params.id) },
-            include: { vitals: true, visits: true }
+            where: {user_id: Number.parseInt(params.id)},
+            include: {vitals: true, visits: true}
         }),
         doctors: prisma.user.findMany({where: {role: 'doctor'}}),
+        specialities: prisma.speciality.findMany({}),
     };
 }) satisfies PageServerLoad;
 
@@ -32,34 +33,36 @@ const severityLevels = ['Critical', 'Severe', 'Mild', 'Stable'];
 
 // Calculate the overall severity based on selected condition IDs
 async function calculateOverallSeverity(selectedConditionIds: number[]): Promise<string> {
+    console.log("Selected conditions", selectedConditionIds);
+
     if (selectedConditionIds.length === 0) {
         return 'Stable'; // Default to 'Stable' if no conditions are selected
-      }
-    
-      // Fetch condition objects for the selected IDs
-      const selectedConditions = await prisma.condition.findMany({
+    }
+
+    // Fetch condition objects for the selected IDs
+    const selectedConditions = await prisma.condition.findMany({
         where: {
-          id: {
-            in: selectedConditionIds,
-          },
+            id: {
+                in: selectedConditionIds,
+            },
         },
-      });
-    
-      // Calculate the average severity index
-      const averageSeverityIndex = Math.floor(
+    });
+
+    // Calculate the average severity index
+    const averageSeverityIndex = Math.floor(
         selectedConditions.reduce((sum, condition) => {
-          const conditionSeverityIndex = severityLevels.indexOf(condition.severity);
-          return sum + conditionSeverityIndex;
+            const conditionSeverityIndex = severityLevels.indexOf(condition.severity);
+            return sum + conditionSeverityIndex;
         }, 0) / selectedConditions.length
-      );
-    
-      // Ensure the calculated index is within bounds
-      const overallSeverityIndex = Math.max(0, Math.min(averageSeverityIndex, severityLevels.length - 1));
-    
-      // Retrieve the overall severity based on the calculated index
-      const overallSeverity = severityLevels[overallSeverityIndex];
-    
-      return overallSeverity;
+    );
+
+    // Ensure the calculated index is within bounds
+    const overallSeverityIndex = Math.max(0, Math.min(averageSeverityIndex, severityLevels.length - 1));
+
+    // Retrieve the overall severity based on the calculated index
+    const overallSeverity = severityLevels[overallSeverityIndex];
+
+    return overallSeverity;
 }
 
 
@@ -78,9 +81,7 @@ async function insertSymptomsOnVisits(ids: string, visitId: number) {
 }
 
 export const actions = {
-    default: async ({ request, cookies, params }) => {
-
-        console.log(request);
+    default: async ({request, cookies, params}) => {
 
         const doctorId = Number.parseInt(params.id);
 
@@ -89,7 +90,7 @@ export const actions = {
         const conditions: any = data.get('conditions');
         // const userId = data.get('userId');
 
-        console.log(conditions)
+        console.log("Conditions",conditions)
 
         const numbersArray = conditions == null ? [] : conditions.split(',').map(Number);
 
@@ -112,12 +113,12 @@ export const actions = {
 
             const validate = {
                 userId: data.get('userId'),
-                doctorId: data.get('doctorId'),
-                height: data.get('height'),
-                weight: data.get('weight'),
+                doctorId: parseInt(data.get('doctorId')),
+                height: parseInt(data.get('height')),
+                weight: parseInt(data.get('weight')),
                 condition: overallSeverity,
-                temperature: data.get('temperature'),
-                bloodPressure: data.get('bp')
+                temperature: parseInt(data.get('temperature')),
+                bloodPressure: parseInt(data.get('bp'))
             };
 
             const body = await schema.validateAsync(validate);
@@ -146,7 +147,7 @@ export const actions = {
             console.log(error);
         }
 
-        throw redirect(302, `/nurse/patients/${params.id}`)
+        throw redirect(302, `/nurse/patients/${params.id}/create`)
 
     }
 }

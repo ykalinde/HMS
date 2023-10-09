@@ -5,8 +5,9 @@ import * as bcrypt from "bcrypt";
 import { number, object, string, ValidationError } from "joi";
 
 export const load = (async () => {
+    const patients = await prisma.user.findMany({ where: { role: 'patient' } });
     return {
-        patients: await prisma.user.findMany({ where: { role: 'patient' } }),
+        patients,
     };
 }) satisfies PageServerLoad;
 

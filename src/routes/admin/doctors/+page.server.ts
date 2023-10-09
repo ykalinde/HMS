@@ -7,6 +7,7 @@ import { number, object, string, ValidationError } from "joi";
 export const load = (async () => {
     return {
         doctors: await prisma.user.findMany({ where: { role: 'doctor' } }),
+        specialities: await prisma.speciality.findMany({}),
     };
 }) satisfies PageServerLoad;
 
@@ -22,6 +23,7 @@ export const actions = {
             role: string().required(),
             age: number().required(),
             gender: string().required(),
+            speciality: string().required(),
         });
 
         try {
@@ -32,7 +34,8 @@ export const actions = {
                 password: data.get('password'),
                 role: "doctor",
                 age: data.get('age'),
-                gender: data.get('gender')
+                gender: data.get('gender'),
+                speciality: data.get('speciality'),
             });
 
             const result = await prisma.user.findUnique({
